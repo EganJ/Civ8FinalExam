@@ -1,12 +1,18 @@
 import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Polygon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.JButton;
 
 public class MainMenu extends Scene {
 	Image screenshot;
@@ -18,6 +24,9 @@ public class MainMenu extends Scene {
 			//loads in images
 			try {
 				background=ImageIO.read(new File("mainMenuBackground.jpg"));
+				while(background.getHeight(null)<UIMain.SCREEN_SIZE.getHeight()||UIMain.SCREEN_SIZE.getWidth()>background.getHeight(null)) {
+					background=background.getScaledInstance((int)(background.getWidth(null)*1.25), (int)(background.getHeight(null)*1.25), Image.SCALE_SMOOTH);
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -48,6 +57,9 @@ public class MainMenu extends Scene {
 		//close polygon
 		p.addPoint(0, getHeight());
 		g.fillPolygon(p);
+		if(ticks>getIntroTicks()-5) {
+			g.fillRect(0, 0, UIMain.SCREEN_SIZE.width, UIMain.SCREEN_SIZE.height);
+		}
 	}
 
 	@Override
@@ -58,11 +70,15 @@ public class MainMenu extends Scene {
 
 	@Override
 	void drawMain(Graphics g) {
-		System.out.println(ticks);
-		g.fillRect(0,0, getWidth(), getHeight());
-		((Graphics2D)(g)).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Math.min(1f, Math.max(0f,4*ticks/(100f)))));
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, UIMain.SCREEN_SIZE.width, UIMain.SCREEN_SIZE.height);
+		((Graphics2D)(g)).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Math.min(1f, Math.max(0f,(ticks-10)/(100f)))));
 		g.drawImage(background, 0, 0, null);
+		if(ticks>110) {
 		super.paintComponents(g);
+		((Graphics2D)(g)).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, Math.min(1f, Math.max(0f,(210-ticks)/(100f)))));
+		g.drawImage(background, 0, 0, null);
+		}
 	}
 
 	@Override
@@ -92,13 +108,13 @@ public class MainMenu extends Scene {
 	@Override
 	int getIntroTickMilliseconds() {
 		// TODO Auto-generated method stub
-		return 10;
+		return 30;
 	}
 
 	@Override
 	protected int getMainTickMilliseconds() {
 		// TODO Auto-generated method stub
-		return 10;
+		return 40;
 	}
 
 	@Override
@@ -111,5 +127,63 @@ public class MainMenu extends Scene {
 	protected int getOutroTickMilliseconds() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	@Override
+	void startIntro() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	void startMain() {
+		//Initialize content objects
+		repaint();
+		new Thread(){
+			public void run() {
+		JButton startGame= new JButton("Start");
+		JButton rules= new JButton("Rules");
+		JButton options= new JButton("Options");
+		JButton exit= new JButton("Exit");
+		//formats each button
+		formatButton(startGame);
+		formatButton(rules);
+		formatButton(options);
+		formatButton(exit);
+		//adds each button to a vertical box, centered
+		Box buttons= Box.createVerticalBox();
+		buttons.setMinimumSize(UIMain.SCREEN_SIZE);
+		buttons.setMaximumSize(UIMain.SCREEN_SIZE);
+		buttons.setPreferredSize(UIMain.SCREEN_SIZE);
+		buttons.add(Box.createVerticalGlue());
+		buttons.add(UIMain.centerComponentHorizontal(startGame));
+		buttons.add(UIMain.centerComponentHorizontal(rules));
+		buttons.add(UIMain.centerComponentHorizontal(options));
+		buttons.add(UIMain.centerComponentHorizontal(exit));
+		buttons.add(Box.createVerticalGlue());
+		//adds to this
+		add(UIMain.centerComponentHorizontal(buttons));
+		revalidate();
+		
+		//adds button listeners
+		exit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Initialization.end();
+			}
+		});}}.run();
+		repaint();
+	}
+	/**
+	 * Formats parameter JButton to have the size, style, and attributes desired of a button on the menu
+	 * @param b
+	 */
+	private static void formatButton(JButton b) {
+		b.setPreferredSize(new Dimension(200,70));
+		b.setFont(UIMain.mainFont.deriveFont(25f));
+		b.setBackground(new Color(250,230,220));
+		b.setForeground(new Color(10,20,30));
+	}
+	@Override
+	void startOutro() {
+		// TODO Auto-generated method stub
+		
 	}
 }
