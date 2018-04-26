@@ -141,7 +141,7 @@ public abstract class Scene extends JPanel{
 	 */
 	abstract protected int getMainTickMilliseconds();
 	/**
-	 * @return the millisecond length of each tick in the outro. What you put here determines the timer tick time
+	 * @return the millisecond length of the outro. What you put here determines the run time of the outro
 	 */
 	abstract protected int getOutroMillisecondLength();
 	abstract protected int getOutroTickMilliseconds();
