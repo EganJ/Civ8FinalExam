@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -16,6 +15,10 @@ import javax.swing.Box;
 import javax.swing.JButton;
 
 public class MainMenu extends Scene {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	Image screenshot;
 	static Image background;
 	static boolean isSetUp=false;
@@ -26,7 +29,7 @@ public class MainMenu extends Scene {
 			//loads in images
 			try {
 				background=ImageIO.read(new File("mainMenuBackground.jpg"));
-				while(background.getHeight(null)<UIMain.SCREEN_SIZE.getHeight()||UIMain.SCREEN_SIZE.getWidth()>background.getHeight(null)) {
+				while((background.getHeight(null)<UIMain.SCREEN_SIZE.getHeight())||(UIMain.SCREEN_SIZE.getWidth()>background.getWidth(null))) {
 					background=background.getScaledInstance((int)(background.getWidth(null)*1.25), (int)(background.getHeight(null)*1.25), Image.SCALE_SMOOTH);
 				}
 				isSetUp=true;
@@ -39,28 +42,12 @@ public class MainMenu extends Scene {
 	void transitionInDraw(Graphics g) {
 		if(ticks>1) {
 		g.drawImage(screenshot, 0, 0, null);
-		Polygon p = new Polygon();
-		p.addPoint(0, 0);
-		p.addPoint(getWidth(), 0);
-		p.addPoint(getWidth(), getHeight());
-		p.addPoint(0, getHeight());
-		//add points of center box. (Radius-constant*ticks)*cos(startingAngle*constant*ticks)+centercoords,(Radius-constant*ticks)*sin(startingAngle*constant*ticks)+centercoords,
-		double radiusShrink=(UIMain.SCREEN_SIZE.getWidth()/2)/getIntroTicks();
-		double angleUp=0.03;
-		int radius=(int) (getWidth()-2*ticks*radiusShrink);
-		//bottom left
-		p.addPoint((int)(radius*Math.cos(5*Math.PI/4+angleUp*ticks))+getWidth()/2,(int)(radius*Math.sin(5*Math.PI/4+angleUp*ticks))+getHeight()/2);
-		//bottom right
-		p.addPoint((int)(radius*Math.cos(7*Math.PI/4+angleUp*ticks))+getWidth()/2,(int)(radius*Math.sin(7*Math.PI/4+angleUp*ticks))+getHeight()/2);
-		//top right
-		p.addPoint((int)(radius*Math.cos(1*Math.PI/4+angleUp*ticks))+getWidth()/2,(int)(radius*Math.sin(1*Math.PI/4+angleUp*ticks))+getHeight()/2);
-		//top left
-		p.addPoint((int)(radius*Math.cos(3*Math.PI/4+angleUp*ticks))+getWidth()/2,(int)(radius*Math.sin(3*Math.PI/4+angleUp*ticks))+getHeight()/2);
-		//close box with bottom left point again
-		p.addPoint((int)(radius*Math.cos(5*Math.PI/4+angleUp*ticks))+getWidth()/2,(int)(radius*Math.sin(5*Math.PI/4+angleUp*ticks))+getHeight()/2);
-		//close polygon
-		p.addPoint(0, getHeight());
-		g.fillPolygon(p);
+		for(int x=0;x<UIMain.SCREEN_SIZE.width/40+1;x++) {
+			for(int y=0;y<UIMain.SCREEN_SIZE.width/40+1;y++) {
+				int tileSize=(int) Math.min(40, Math.max(0,ticks-Math.hypot(x,y)));
+				g.fillRect(40*x, 40*y, tileSize, tileSize);
+			}
+		}
 		}
 	}
 
@@ -104,7 +91,7 @@ public class MainMenu extends Scene {
 	@Override
 	protected int getIntroMillisecondLength() {
 		// TODO Auto-generated method stub
-		return 1000;
+		return 2000;
 	}
 
 	@Override
@@ -177,7 +164,7 @@ public class MainMenu extends Scene {
 	private static void formatButton(JButton b) {
 		b.setPreferredSize(new Dimension(200,70));
 		b.setFont(UIMain.mainFont.deriveFont(25f));
-		b.setBackground(new Color(100,100,100));
+		b.setBackground(new Color(100,100,100,100));
 		b.setForeground(new Color(10,20,30));
 		b.setBorder(BorderFactory.createEtchedBorder());
 	}
