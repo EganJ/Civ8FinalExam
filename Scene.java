@@ -8,6 +8,7 @@ import javax.swing.JPanel;
  * This class is used to transition between screens/scenes in the game
  * @author Egan Johnson
  * Please note: on any children, do NOT call super.paint(g); it will cause recursion. paintComponent is ok
+ * It is best if you set the background color to the color that is used by the transition
  */
 public abstract class Scene extends JPanel{
 	protected int phase=-1;// whether the intro, body, or outro is being drawn. 0=intro, 1= body, 2=outro. 

@@ -39,8 +39,8 @@ public class UIMain {
 		
 		scene=new MainMenu();
 		frame.add(scene);
-		frame.setVisible(true);
 		scene.swapIn();
+		frame.setVisible(true);
 	}
 
 	/**

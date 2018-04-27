@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 
@@ -19,6 +20,7 @@ public class MainMenu extends Scene {
 	static Image background;
 	static boolean isSetUp=false;
 	MainMenu(){
+		setBackground(Color.BLACK);
 		screenshot=UIMain.getScreenshot();
 		if(!isSetUp) {
 			//loads in images
@@ -27,6 +29,7 @@ public class MainMenu extends Scene {
 				while(background.getHeight(null)<UIMain.SCREEN_SIZE.getHeight()||UIMain.SCREEN_SIZE.getWidth()>background.getHeight(null)) {
 					background=background.getScaledInstance((int)(background.getWidth(null)*1.25), (int)(background.getHeight(null)*1.25), Image.SCALE_SMOOTH);
 				}
+				isSetUp=true;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -34,6 +37,7 @@ public class MainMenu extends Scene {
 	}
 	@Override
 	void transitionInDraw(Graphics g) {
+		if(ticks>1) {
 		g.drawImage(screenshot, 0, 0, null);
 		Polygon p = new Polygon();
 		p.addPoint(0, 0);
@@ -43,7 +47,7 @@ public class MainMenu extends Scene {
 		//add points of center box. (Radius-constant*ticks)*cos(startingAngle*constant*ticks)+centercoords,(Radius-constant*ticks)*sin(startingAngle*constant*ticks)+centercoords,
 		double radiusShrink=(UIMain.SCREEN_SIZE.getWidth()/2)/getIntroTicks();
 		double angleUp=0.03;
-		int radius=(int) (getWidth()/2-ticks*radiusShrink);
+		int radius=(int) (getWidth()-2*ticks*radiusShrink);
 		//bottom left
 		p.addPoint((int)(radius*Math.cos(5*Math.PI/4+angleUp*ticks))+getWidth()/2,(int)(radius*Math.sin(5*Math.PI/4+angleUp*ticks))+getHeight()/2);
 		//bottom right
@@ -57,8 +61,6 @@ public class MainMenu extends Scene {
 		//close polygon
 		p.addPoint(0, getHeight());
 		g.fillPolygon(p);
-		if(ticks>getIntroTicks()-5) {
-			g.fillRect(0, 0, UIMain.SCREEN_SIZE.width, UIMain.SCREEN_SIZE.height);
 		}
 	}
 
@@ -108,7 +110,7 @@ public class MainMenu extends Scene {
 	@Override
 	int getIntroTickMilliseconds() {
 		// TODO Auto-generated method stub
-		return 30;
+		return 20;
 	}
 
 	@Override
@@ -136,9 +138,6 @@ public class MainMenu extends Scene {
 	@Override
 	void startMain() {
 		//Initialize content objects
-		repaint();
-		new Thread(){
-			public void run() {
 		JButton startGame= new JButton("Start");
 		JButton rules= new JButton("Rules");
 		JButton options= new JButton("Options");
@@ -168,7 +167,7 @@ public class MainMenu extends Scene {
 			public void actionPerformed(ActionEvent e) {
 				Initialization.end();
 			}
-		});}}.run();
+		});
 		repaint();
 	}
 	/**
@@ -178,8 +177,9 @@ public class MainMenu extends Scene {
 	private static void formatButton(JButton b) {
 		b.setPreferredSize(new Dimension(200,70));
 		b.setFont(UIMain.mainFont.deriveFont(25f));
-		b.setBackground(new Color(250,230,220));
+		b.setBackground(new Color(100,100,100));
 		b.setForeground(new Color(10,20,30));
+		b.setBorder(BorderFactory.createEtchedBorder());
 	}
 	@Override
 	void startOutro() {
